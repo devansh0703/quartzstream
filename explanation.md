@@ -1,8 +1,8 @@
-# HydraStream Implementation Explanation
+# QuartzStream Implementation Explanation
 
 ## What this engine is
 
-HydraStream is a **stream-processing engine**, not a clone of pandas internals.  
+QuartzStream is a **stream-processing engine**, not a clone of pandas internals.  
 It offers pandas-like ergonomics in Python while running supported operations in native C++ for low-latency workloads.
 
 ## Why this architecture
@@ -68,7 +68,7 @@ This avoids Python-object-heavy hot paths and keeps the CPU-intensive work in na
 
 ## Performance path split
 
-HydraStream supports two execution paths:
+QuartzStream supports two execution paths:
 
 1. **General row path** for flexible row dictionaries and plan semantics.
 2. **Numeric fast path** (`aggregate_trade_numeric`) for dense numeric arrays.
@@ -103,7 +103,7 @@ For each engine:
 
 - computes grouped windowed mean/count
 - materializes a keyed result map
-- checks logical equivalence with HydraStream output
+- checks logical equivalence with QuartzStream output
 - prints build/process/end-to-end throughput metrics and speedups
 
 ## About “full pandas parity”

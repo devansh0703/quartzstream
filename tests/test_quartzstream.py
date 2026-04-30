@@ -6,7 +6,7 @@ from pathlib import Path
 import pyarrow as pa
 import pytest
 
-from hydrastream import stream_from_udp, stream_manual
+from quartzstream import stream_from_udp, stream_manual
 
 
 def drain_until(stream, *, attempts=10, timeout_ms=200):
@@ -90,7 +90,7 @@ def test_close_flushes_open_windows():
 
 
 def test_checkpoint_restore_recovers_window_state(tmp_path: Path):
-    checkpoint = tmp_path / "hydrastream-checkpoint.json"
+    checkpoint = tmp_path / "quartzstream-checkpoint.json"
     stream = (
         stream_manual(batch_size=16, linger_ms=5, capacity=64)
         .window(seconds=1, by="symbol")

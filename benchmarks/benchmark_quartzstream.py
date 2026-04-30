@@ -3,11 +3,11 @@ from __future__ import annotations
 import argparse
 import time
 
-from hydrastream import stream_manual
+from quartzstream import stream_manual
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Synthetic HydraStream manual-ingest benchmark.")
+    parser = argparse.ArgumentParser(description="Synthetic QuartzStream manual-ingest benchmark.")
     parser.add_argument("--events", type=int, default=200_000)
     parser.add_argument("--batch-size", type=int, default=8192)
     args = parser.parse_args()

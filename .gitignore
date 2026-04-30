@@ -11,7 +11,7 @@ __pycache__/
 *.so
 *.pyd
 *.dylib
-python/hydrastream/_pulse*.so
+python/quartzstream/_pulse*.so
 
 # Packaging artifacts
 build/

@@ -6,7 +6,7 @@ from setuptools import setup
 
 ext_modules = [
     Pybind11Extension(
-        "hydrastream._pulse",
+        "quartzstream._pulse",
         [
             "src/core_processing.cpp",
             "src/native_stream.cpp",
@@ -21,7 +21,7 @@ ext_modules = [
 
 
 setup(
-    packages=["hydrastream"],
+    packages=["quartzstream"],
     package_dir={"": "python"},
     ext_modules=ext_modules,
     cmdclass={"build_ext": build_ext},

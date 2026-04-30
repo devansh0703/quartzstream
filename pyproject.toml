@@ -3,7 +3,7 @@ requires = ["setuptools>=82", "wheel", "pybind11>=2.13"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hydrastream"
+name = "quartzstream"
 version = "0.1.0"
 description = "Low-latency Arrow-native streaming for Python powered by C++."
 readme = "README.md"

@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import polars as pl
 
-from hydrastream import stream_manual
+from quartzstream import stream_manual
 
 
 @dataclass(frozen=True)
@@ -120,7 +120,7 @@ def run_duckdb(columns: dict[str, list[object]]) -> tuple[Result, Result, dict[t
     return processing, end_to_end, lookup
 
 
-def run_hydrastream(columns: dict[str, list[object]]) -> tuple[Result, dict[tuple[int, str], tuple[float, int]]]:
+def run_quartzstream(columns: dict[str, list[object]]) -> tuple[Result, dict[tuple[int, str], tuple[float, int]]]:
     stream = (
         stream_manual(batch_size=len(columns["timestamp"]) + 1, linger_ms=1, capacity=len(columns["timestamp"]) + 1024)
         .filter("is_trade", "==", 1)
@@ -152,17 +152,17 @@ def run_hydrastream(columns: dict[str, list[object]]) -> tuple[Result, dict[tupl
 
 def assert_same_results(
     pandas_lookup: dict[tuple[int, str], tuple[float, int]],
-    hydrastream_lookup: dict[tuple[int, str], tuple[float, int]],
+    quartzstream_lookup: dict[tuple[int, str], tuple[float, int]],
 ) -> None:
-    if pandas_lookup.keys() != hydrastream_lookup.keys():
-        missing = pandas_lookup.keys() ^ hydrastream_lookup.keys()
+    if pandas_lookup.keys() != quartzstream_lookup.keys():
+        missing = pandas_lookup.keys() ^ quartzstream_lookup.keys()
         raise AssertionError(f"result key mismatch: {sorted(missing)[:5]}")
     for key, (pandas_mean, pandas_count) in pandas_lookup.items():
-        hydra_mean, hydra_count = hydrastream_lookup[key]
+        hydra_mean, hydra_count = quartzstream_lookup[key]
         if pandas_count != hydra_count or abs(pandas_mean - hydra_mean) > 1e-9:
             raise AssertionError(
                 f"result mismatch for {key}: pandas={(pandas_mean, pandas_count)} "
-                f"hydrastream={(hydra_mean, hydra_count)}"
+                f"quartzstream={(hydra_mean, hydra_count)}"
             )
 
 
@@ -174,7 +174,7 @@ def print_result(name: str, result: Result) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Compare pandas and HydraStream on the same synthetic rows.")
+    parser = argparse.ArgumentParser(description="Compare pandas and QuartzStream on the same synthetic rows.")
     parser.add_argument("--events", type=int, default=200_000)
     args = parser.parse_args()
 
@@ -182,11 +182,11 @@ def main() -> None:
     pandas_processing, pandas_end_to_end, pandas_lookup = run_pandas(columns)
     polars_processing, polars_end_to_end, polars_lookup = run_polars(columns)
     duckdb_processing, duckdb_end_to_end, duckdb_lookup = run_duckdb(columns)
-    hydrastream_end_to_end, hydrastream_lookup = run_hydrastream(columns)
+    quartzstream_end_to_end, quartzstream_lookup = run_quartzstream(columns)
 
-    assert_same_results(pandas_lookup, hydrastream_lookup)
-    assert_same_results(polars_lookup, hydrastream_lookup)
-    assert_same_results(duckdb_lookup, hydrastream_lookup)
+    assert_same_results(pandas_lookup, quartzstream_lookup)
+    assert_same_results(polars_lookup, quartzstream_lookup)
+    assert_same_results(duckdb_lookup, quartzstream_lookup)
 
     print_result("pandas_processing", pandas_processing)
     print_result("pandas_end_to_end", pandas_end_to_end)
@@ -194,13 +194,13 @@ def main() -> None:
     print_result("polars_end_to_end", polars_end_to_end)
     print_result("duckdb_processing", duckdb_processing)
     print_result("duckdb_end_to_end", duckdb_end_to_end)
-    print_result("hydrastream_end_to_end", hydrastream_end_to_end)
-    print(f"hydrastream_vs_pandas_processing_speedup={hydrastream_end_to_end.rows_per_second / pandas_processing.rows_per_second:.3f}")
-    print(f"hydrastream_vs_pandas_end_to_end_speedup={hydrastream_end_to_end.rows_per_second / pandas_end_to_end.rows_per_second:.3f}")
-    print(f"hydrastream_vs_polars_processing_speedup={hydrastream_end_to_end.rows_per_second / polars_processing.rows_per_second:.3f}")
-    print(f"hydrastream_vs_polars_end_to_end_speedup={hydrastream_end_to_end.rows_per_second / polars_end_to_end.rows_per_second:.3f}")
-    print(f"hydrastream_vs_duckdb_processing_speedup={hydrastream_end_to_end.rows_per_second / duckdb_processing.rows_per_second:.3f}")
-    print(f"hydrastream_vs_duckdb_end_to_end_speedup={hydrastream_end_to_end.rows_per_second / duckdb_end_to_end.rows_per_second:.3f}")
+    print_result("quartzstream_end_to_end", quartzstream_end_to_end)
+    print(f"quartzstream_vs_pandas_processing_speedup={quartzstream_end_to_end.rows_per_second / pandas_processing.rows_per_second:.3f}")
+    print(f"quartzstream_vs_pandas_end_to_end_speedup={quartzstream_end_to_end.rows_per_second / pandas_end_to_end.rows_per_second:.3f}")
+    print(f"quartzstream_vs_polars_processing_speedup={quartzstream_end_to_end.rows_per_second / polars_processing.rows_per_second:.3f}")
+    print(f"quartzstream_vs_polars_end_to_end_speedup={quartzstream_end_to_end.rows_per_second / polars_end_to_end.rows_per_second:.3f}")
+    print(f"quartzstream_vs_duckdb_processing_speedup={quartzstream_end_to_end.rows_per_second / duckdb_processing.rows_per_second:.3f}")
+    print(f"quartzstream_vs_duckdb_end_to_end_speedup={quartzstream_end_to_end.rows_per_second / duckdb_end_to_end.rows_per_second:.3f}")
 
 
 if __name__ == "__main__":

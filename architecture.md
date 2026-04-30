@@ -1,4 +1,4 @@
-# HydraStream Architecture
+# QuartzStream Architecture
 
 ## Scope of the current engine
 
@@ -19,7 +19,7 @@ It is **not** full pandas feature parity. The implementation is a specialized st
 
 ## Layered design
 
-### 1. Python API layer (`python/hydrastream/fluid.py`)
+### 1. Python API layer (`python/quartzstream/fluid.py`)
 
 Responsibilities:
 
@@ -88,12 +88,12 @@ Checkpoint persistence stores/restores the above state.
 
 ## Benchmark architecture
 
-`benchmarks/benchmark_pandas_vs_hydrastream.py` compares equivalent workloads across:
+`benchmarks/benchmark_pandas_vs_quartzstream.py` compares equivalent workloads across:
 
 - pandas
 - polars
 - duckdb
-- hydrastream
+- quartzstream
 
 All comparison paths assert logical output equivalence before speedup reporting.
 

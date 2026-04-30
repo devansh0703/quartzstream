@@ -1,6 +1,6 @@
-# HydraStream
+# QuartzStream
 
-HydraStream is a C++-powered Python streaming package that ingests live events into Arrow-native batches and exposes a fluent Python API for low-latency stream processing.
+QuartzStream is a C++-powered Python streaming package that ingests live events into Arrow-native batches and exposes a fluent Python API for low-latency stream processing.
 
 Current implementation scope:
 
